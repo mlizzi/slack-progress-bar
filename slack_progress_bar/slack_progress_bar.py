@@ -54,19 +54,45 @@ class SlackProgressBar:
 
         self._value = value
 
+        message = (
+            ":white_check_mark: Loading complete!"
+            if self._value == self._total
+            else ""
+        )
+
         self._client.chat_update(
             channel=self._channel_id,
             ts=self._ts,
-            text=self._as_string(),
+            text=self._as_string(message),
         )
 
-    def _as_string(self):
-        """The progress bar visualized as a string."""
+    def error(self) -> None:
+        """Set the bar to an error state to indicate loading has stopped."""
+        self._client.chat_update(
+            channel=self._channel_id,
+            ts=self._ts,
+            text=self._as_string(message=":warning: ERROR: Loading stopped!"),
+        )
+
+    def _as_string(self, message: str = "") -> str:
+        """Get the progress bar visualized as a string.
+
+        Parameters
+        ----------
+        message
+            A message to include alongside the progress bar.
+
+        Returns
+        -------
+        str
+            The string representation of the error bar.
+        """
         amount_complete = round(self._bar_width * self._value / self._total)
         amount_incomplete = self._bar_width - amount_complete
         bar = amount_complete * chr(9608) + amount_incomplete * chr(9601)
 
         return (
             f"{bar} {self._value}/{self._total} "
-            f"({int(self._value / self._total * 100)}%)"
+            f"({int(self._value / self._total * 100)}%) "
+            f"{message}"
         )
