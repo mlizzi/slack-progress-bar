@@ -19,5 +19,5 @@ setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.9",
-    install_requires=["slack"],
+    install_requires=["slack_sdk"],
 )
